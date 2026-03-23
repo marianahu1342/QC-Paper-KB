@@ -141,7 +141,74 @@ def stats_by_venue() -> dict:
     return stats
 
 
-def recommend_venues(keywords: list, top_n: int = 10) -> list:
+def expand_keywords(keywords: list) -> list:
+    """将用户关键词扩展为同义词族，提高搜索覆盖率。
+
+    例如 "compilation" 会自动包含 "transpilation", "routing", "mapping" 等。
+    返回去重后的扩展关键词列表。
+    """
+    # 预定义关键词族（topic clusters）
+    TOPIC_CLUSTERS = {
+        # 编译/优化方向
+        "compilation": ["compilation", "transpilation", "transpiler", "circuit optimization",
+                       "routing", "mapping", "qubit mapping", "qubit routing", "gate synthesis",
+                       "circuit synthesis", "layout synthesis"],
+        "ZX": ["ZX calculus", "ZX diagram", "ZX rewriting", "graph rewriting",
+               "ZX-calculus", "pyzx", "spider fusion"],
+        # 纠错方向
+        "error correction": ["error correction", "QEC", "surface code", "stabilizer code",
+                            "toric code", "color code", "LDPC", "fault tolerant",
+                            "fault-tolerant", "decoder", "decoding"],
+        "surface code": ["surface code", "rotated surface code", "planar code",
+                        "toric code", "topological code"],
+        # ML 方向
+        "machine learning": ["machine learning", "neural network", "deep learning",
+                           "reinforcement learning", "GNN", "graph neural",
+                           "transformer", "diffusion model"],
+        "reinforcement learning": ["reinforcement learning", "RL", "policy gradient",
+                                  "actor-critic", "PPO", "DQN", "Q-learning"],
+        "diffusion": ["diffusion model", "denoising diffusion", "DDPM",
+                     "score matching", "flow matching", "generative model"],
+        # 硬件方向
+        "superconducting": ["superconducting", "transmon", "fluxonium",
+                          "superconducting qubit", "cQED"],
+        "trapped ion": ["trapped ion", "ion trap", "shuttling", "ion chain"],
+        "neutral atom": ["neutral atom", "Rydberg", "optical tweezer", "atom array"],
+        # 调度/多程序
+        "scheduling": ["scheduling", "multiprogramming", "multi-programming",
+                      "multi-tenant", "resource allocation", "job scheduling",
+                      "circuit partitioning", "workload"],
+        "crosstalk": ["crosstalk", "cross-talk", "frequency collision",
+                     "ZZ interaction", "parasitic coupling", "qubit interference"],
+        # 模拟
+        "simulation": ["quantum simulation", "hamiltonian simulation",
+                      "Trotter", "product formula", "variational simulation"],
+        # 变分
+        "variational": ["variational quantum", "VQE", "QAOA", "VQA",
+                       "parameterized quantum circuit", "PQC", "ansatz"],
+        # 量子网络
+        "networking": ["quantum network", "quantum internet", "entanglement distribution",
+                      "quantum repeater", "quantum communication"],
+    }
+
+    expanded = set()
+    for kw in keywords:
+        kw_lower = kw.lower()
+        expanded.add(kw_lower)
+        # 检查是否匹配某个 cluster
+        for cluster_key, cluster_words in TOPIC_CLUSTERS.items():
+            if kw_lower in cluster_key or cluster_key in kw_lower:
+                expanded.update(w.lower() for w in cluster_words)
+            # 也检查是否是 cluster 中的某个词
+            for w in cluster_words:
+                if kw_lower in w.lower() or w.lower() in kw_lower:
+                    expanded.update(ww.lower() for ww in cluster_words)
+                    break
+
+    return list(expanded)
+
+
+def recommend_venues(keywords: list, top_n: int = 10, expand: bool = True) -> list:
     """基于关键词自动扫描所有 venue，按接收密度排序推荐。
 
     对每个 venue 返回：
@@ -149,7 +216,17 @@ def recommend_venues(keywords: list, top_n: int = 10) -> list:
     - 近3年匹配数
     - 最近一篇的日期和标题
     - 高引代表作
+
+    expand=True 时自动扩展同义词（推荐开启）
     """
+    # 关键词扩展
+    if expand:
+        expanded = expand_keywords(keywords)
+        if len(expanded) > len(keywords):
+            print(f"  Keywords expanded: {len(keywords)} → {len(expanded)}", flush=True)
+    else:
+        expanded = [kw.lower() for kw in keywords]
+
     # 加载 venue 元数据
     venues_data = {}
     if os.path.exists(VENUES_FILE):
@@ -173,7 +250,7 @@ def recommend_venues(keywords: list, top_n: int = 10) -> list:
         matched = []
         for p in papers:
             text = f"{p.get('title', '')} {p.get('abstract', '')} {p.get('tldr', '')}".lower()
-            if any(kw.lower() in text for kw in keywords):
+            if any(kw in text for kw in expanded):
                 matched.append(p)
 
         if not matched:
@@ -274,6 +351,7 @@ def main():
     rec_p = sub.add_parser("recommend", help="基于关键词自动推荐投稿 venue")
     rec_p.add_argument("keywords", nargs="+", help="关键词列表（空格分隔）")
     rec_p.add_argument("--top", "-n", type=int, default=10)
+    rec_p.add_argument("--no-expand", action="store_true", help="禁用同义词扩展")
 
     # unsummarized 子命令
     unsum_p = sub.add_parser("unsummarized", help="列出未总结的论文")
@@ -311,7 +389,7 @@ def main():
                     print(f"  {v}: {cnt}")
 
     elif args.command == "recommend":
-        recs = recommend_venues(args.keywords, top_n=args.top)
+        recs = recommend_venues(args.keywords, top_n=args.top, expand=not getattr(args, 'no_expand', False))
         print(f"=== Venue Recommendation for: {', '.join(args.keywords)} ===\n")
         print(f"{'Venue':<15} {'Tier':<20} {'Match':<7} {'3yr':<5} {'1yr':<5} {'Latest':<12} {'Top Cited'}")
         print("-" * 105)
