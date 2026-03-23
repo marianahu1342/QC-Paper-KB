@@ -21,19 +21,25 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from config import VENUES, PAPERS_DIR, VENUES_FILE, DATA_DIR
 
 
-def load_all_papers(venue_ids: Optional[list] = None) -> list:
-    """加载所有论文数据"""
+def load_all_papers(venue_ids: Optional[list] = None, dedup: bool = True) -> list:
+    """加载所有论文数据，支持去重。
+
+    去重策略：同一篇论文可能出现在 venue 文件和 arXiv 文件中，
+    优先保留 venue 版本（有正式发表信息），用 DOI > arxiv_id > title 作为 key。
+    """
     all_papers = []
     if venue_ids is None:
-        # 加载所有 venue 文件
         if not os.path.exists(PAPERS_DIR):
             return []
-        for fname in os.listdir(PAPERS_DIR):
-            if fname.endswith(".json"):
-                fpath = os.path.join(PAPERS_DIR, fname)
-                with open(fpath, "r", encoding="utf-8") as f:
-                    papers = json.load(f)
-                all_papers.extend(papers)
+        # 先加载非 arXiv 文件（优先保留 venue 版本）
+        fnames = sorted(os.listdir(PAPERS_DIR))
+        non_arxiv = [f for f in fnames if f.endswith(".json") and not f.startswith("arxiv")]
+        arxiv_files = [f for f in fnames if f.endswith(".json") and f.startswith("arxiv")]
+        for fname in non_arxiv + arxiv_files:
+            fpath = os.path.join(PAPERS_DIR, fname)
+            with open(fpath, "r", encoding="utf-8") as f:
+                papers = json.load(f)
+            all_papers.extend(papers)
     else:
         for vid in venue_ids:
             fpath = os.path.join(PAPERS_DIR, f"{vid}.json")
@@ -41,6 +47,20 @@ def load_all_papers(venue_ids: Optional[list] = None) -> list:
                 with open(fpath, "r", encoding="utf-8") as f:
                     papers = json.load(f)
                 all_papers.extend(papers)
+
+    if dedup and len(all_papers) > 0:
+        seen = set()
+        unique = []
+        for p in all_papers:
+            # 用 DOI > arxiv_id > title 前50字符 作为去重 key
+            key = p.get("doi") or p.get("arxiv_id") or p.get("title", "")[:50].lower()
+            if key and key not in seen:
+                seen.add(key)
+                unique.append(p)
+            elif not key:
+                unique.append(p)  # 无法判断的保留
+        all_papers = unique
+
     return all_papers
 
 
@@ -53,8 +73,9 @@ def search_papers(
     year_from: Optional[int] = None,
     year_to: Optional[int] = None,
     needs_summary: Optional[bool] = None,
+    expand: bool = False,
 ) -> list:
-    """搜索论文"""
+    """搜索论文。expand=True 时对查询词做同义词扩展。"""
     venue_ids = None
     if venue:
         venue_ids = [venue]
@@ -65,13 +86,23 @@ def search_papers(
 
     # 关键词过滤
     if query:
-        query_lower = query.lower()
-        query_terms = query_lower.split()
-        filtered = []
-        for p in papers:
-            text = f"{p.get('title', '')} {p.get('abstract', '')} {p.get('tldr', '')}".lower()
-            if all(term in text for term in query_terms):
-                filtered.append(p)
+        if expand:
+            # 扩展模式：查询词拆分后每个都扩展，匹配任一扩展词即可
+            expanded = expand_keywords(query.lower().split())
+            filtered = []
+            for p in papers:
+                text = f"{p.get('title', '')} {p.get('abstract', '')} {p.get('tldr', '')}".lower()
+                if any(kw in text for kw in expanded):
+                    filtered.append(p)
+        else:
+            # 原始模式：所有词都必须出现
+            query_lower = query.lower()
+            query_terms = query_lower.split()
+            filtered = []
+            for p in papers:
+                text = f"{p.get('title', '')} {p.get('abstract', '')} {p.get('tldr', '')}".lower()
+                if all(term in text for term in query_terms):
+                    filtered.append(p)
         papers = filtered
 
     # 年份过滤
@@ -342,6 +373,7 @@ def main():
     search_p.add_argument("--year-from", type=int)
     search_p.add_argument("--year-to", type=int)
     search_p.add_argument("--verbose", action="store_true")
+    search_p.add_argument("--expand", action="store_true", help="启用同义词扩展搜索")
 
     # stats 子命令
     stats_p = sub.add_parser("stats", help="统计信息")
@@ -368,6 +400,7 @@ def main():
             limit=args.limit,
             year_from=args.year_from,
             year_to=args.year_to,
+            expand=getattr(args, 'expand', False),
         )
         print(f"Found {len(results)} papers:\n")
         for i, p in enumerate(results, 1):
