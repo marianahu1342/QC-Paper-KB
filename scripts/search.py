@@ -385,6 +385,12 @@ def main():
     rec_p.add_argument("--top", "-n", type=int, default=10)
     rec_p.add_argument("--no-expand", action="store_true", help="禁用同义词扩展")
 
+    # cross 子命令（跨 KB 搜索）
+    cross_p = sub.add_parser("cross", help="跨 KB 搜索（量子+ML+交叉）")
+    cross_p.add_argument("query", help="搜索关键词")
+    cross_p.add_argument("--sort", "-s", default="citations", choices=["date", "citations"])
+    cross_p.add_argument("--limit", "-n", type=int, default=20)
+
     # unsummarized 子命令
     unsum_p = sub.add_parser("unsummarized", help="列出未总结的论文")
     unsum_p.add_argument("--venue", "-v")
@@ -447,6 +453,68 @@ def main():
         for i, p in enumerate(results, 1):
             print(f"[{i}] [{p['venue']}] {p['title']}")
             print(f"    {p.get('date', 'N/A')} | {p.get('url', '')}")
+            print()
+
+    elif args.command == "cross":
+        # 跨 KB 搜索：同时搜 paper_kb（量子）+ rl_kb（ML）+ quantum_ml（交叉）
+        query = " ".join(args.keywords) if hasattr(args, 'keywords') else args.query
+        print(f"=== Cross-KB Search: '{query}' ===\n")
+
+        all_results = []
+
+        # 1. 搜量子 KB（精确匹配，不扩展）
+        quantum_results = search_papers(query=query, sort_by="citations", limit=50, expand=False)
+        for p in quantum_results:
+            p["_source"] = "quantum_kb"
+        all_results.extend(quantum_results)
+        print(f"Quantum KB: {len(quantum_results)} papers")
+
+        # 2. 搜 ML KB
+        ml_kb_dir = "F:/数据集/论文/rl_kb/data/papers"
+        if os.path.exists(ml_kb_dir):
+            ml_papers = []
+            for fname in os.listdir(ml_kb_dir):
+                if fname.endswith(".json"):
+                    with open(os.path.join(ml_kb_dir, fname), "r", encoding="utf-8") as f:
+                        ml_papers.extend(json.load(f))
+
+            query_lower = query.lower()
+            query_terms = query_lower.split()
+            ml_matched = []
+            for p in ml_papers:
+                text = f"{p.get('title', '')} {p.get('abstract', '')} {p.get('tldr', '')}".lower()
+                if all(term in text for term in query_terms):
+                    p["_source"] = "ml_kb"
+                    ml_matched.append(p)
+
+            all_results.extend(ml_matched[:50])
+            print(f"ML KB: {len(ml_matched)} papers")
+
+        # 去重
+        seen = set()
+        unique = []
+        for p in all_results:
+            key = p.get("doi") or p.get("arxiv_id") or p.get("title", "")[:50].lower()
+            if key and key not in seen:
+                seen.add(key)
+                unique.append(p)
+
+        # 排序
+        sort_key = getattr(args, 'sort', 'citations')
+        if sort_key == "citations":
+            unique.sort(key=lambda p: p.get("citations", 0), reverse=True)
+        else:
+            unique.sort(key=lambda p: (p.get("date") or ""), reverse=True)
+
+        limit = getattr(args, 'limit', 20)
+        print(f"Total (deduped): {len(unique)}, showing top {min(limit, len(unique))}\n")
+
+        for i, p in enumerate(unique[:limit], 1):
+            src = p.get("_source", "?")
+            print(f"[{i}] [{src}] {p['title']}")
+            print(f"    Venue: {p.get('venue', '?')} | Date: {p.get('date', '?')} | Citations: {p.get('citations', 0)}")
+            if p.get("tldr"):
+                print(f"    TLDR: {p['tldr'][:120]}")
             print()
 
     else:
